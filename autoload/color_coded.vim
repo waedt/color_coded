@@ -13,6 +13,9 @@ function! s:color_coded_create_defaults()
   if !exists("g:color_coded_filetypes")
     let g:color_coded_filetypes = ['c', 'cpp', 'objc']
   endif
+  if !exists("g:color_coded_skiped_groups")
+    let g:color_coded_skiped_groups = { }
+  endif
 endfunction!
 
 function! s:color_coded_define_lua_helpers()
@@ -199,10 +202,14 @@ EOF
 endfunction!
 
 function! color_coded#add_match(type, line, col, len)
-  let s:file = color_coded#get_buffer_name()
-  call add(g:color_coded_matches[s:file],
-          \matchaddpos(a:type, [[ a:line, a:col, a:len ]], -1))
-  unlet s:file
+  if has_key(g:color_coded_skiped_groups, a:type)
+    return
+  endif
+    let s:file = color_coded#get_buffer_name()
+    call add(g:color_coded_matches[s:file],
+            \matchaddpos(a:type, [[ a:line, a:col, a:len ]], -1))
+    unlet s:file
+  "endif
 endfunction!
 
 " Clears color_coded matches only in the current buffer
